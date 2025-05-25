@@ -1,5 +1,6 @@
 @import "@blocknote/core/fonts/inter.css";
 @import "@blocknote/mantine/style.css";
+@import "react-toastify/dist/ReactToastify.css"; /* Importar aquí los estilos de Toastify */
 
 @tailwind base;
 @tailwind components;

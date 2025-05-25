@@ -2,7 +2,7 @@
 export default {
   server: {
     hmr: {
-      overlay: false
+      overlay: true
     }
   }
 }

@@ -1,37 +1,46 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from 'react'; 
+import { Routes, Route } from 'react-router-dom';
+import Sidebar from './components/Sidebar';
+import Header from './components/Header';
+import Dashboard from './features/dashboard/Dashboard';
+import ProjectBoard from './features/projects/ProjectBoard';
+import NotesEditor from './features/notes/NotesEditor';
+import ProductivityReports from './features/reports/ProductivityReports';
+import UserSettings from './features/settings/UserSettings';
+import { useLocalStorage } from './hooks/useLocalStorage';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [theme, setTheme] = useLocalStorage('theme', 'light'); 
+
+  const toggleTheme = () => {
+    setTheme(prevTheme => (prevTheme === 'light'? 'dark' : 'light'));
+  };
+
+  React.useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [theme]);
 
   return (
-    <>
-      <div className="bg-blue-500 text-white p-4">Hola</div>
-
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="flex h-screen overflow-hidden">
+      <Sidebar />
+      <div className="flex flex-col flex-1 overflow-y-auto">
+        <Header toggleTheme={toggleTheme} currentTheme={theme} />
+        <main className="flex-1 p-6 overflow-y-auto">
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/projects" element={<ProjectBoard />} />
+            <Route path="/notes" element={<NotesEditor />} />
+            <Route path="/reports" element={<ProductivityReports />} />
+            <Route path="/settings" element={<UserSettings />} />
+          </Routes>
+        </main>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </div>
+  );
 }
 
-export default App
+export default App;
