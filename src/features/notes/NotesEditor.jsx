@@ -1,15 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'; // Asegurarse de que React esté importado
 import { BlockNoteEditor } from '@blocknote/core';
-import { BlockNoteView, useCreateBlockNote } from '@blocknote/react';
+import { BlockNoteView } from '@blocknote/mantine'; // <--- CORREGIDO: Importar BlockNoteView desde @blocknote/mantine
+import { useCreateBlockNote } from '@blocknote/react'; // Importar useCreateBlockNote desde @blocknote/react
 import { initialNotes } from '../../data/initialData';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { toast } from 'react-toastify';
 
 function NotesEditor() {
+  // Asegurarse de que initialNotes tenga al menos un elemento para la inicialización
+  const defaultNote = initialNotes.length > 0? initialNotes : 
+  { id: 'new-note', title: 'Nueva Nota', content: [] };
+
   // Usar useLocalStorage para persistir el contenido de las notas
-  const [notesContent, setNotesContent] = useLocalStorage('appNotesContent', initialNotes.content);
-  const [currentNoteId, setCurrentNoteId] = useState(initialNotes.id);
-  const [noteTitle, setNoteTitle] = useState(initialNotes.title);
+  const [notesContent, setNotesContent] = useLocalStorage('appNotesContent', defaultNote.content);
+  const [currentNoteId, setCurrentNoteId] = useState(defaultNote.id);
+  const [noteTitle, setNoteTitle] = useState(defaultNote.title); // <--- CORREGIDO: Nombre de variable
 
   const editor = useCreateBlockNote({
     initialContent: notesContent,
@@ -22,8 +27,12 @@ function NotesEditor() {
       editor.replaceBlocks(editor.document, selectedNote.content);
       setNoteTitle(selectedNote.title);
       setNotesContent(selectedNote.content); // Sincronizar con localStorage
+    } else if (initialNotes.length === 0) { // Manejar el caso donde no hay notas iniciales
+      editor.replaceBlocks(editor.document,);
+      setNoteTitle('Nueva Nota');
+      setNotesContent();
     }
-  }, [currentNoteId, editor]);
+  }, [currentNoteId, editor, initialNotes]); // <--- CORREGIDO: Dependencias de useEffect
 
   const handleEditorChange = () => {
     const newContent = editor.document;
@@ -43,7 +52,7 @@ function NotesEditor() {
       pauseOnHover: true,
       draggable: true,
       progress: undefined,
-      theme: "dark",
+      theme: "dark", // O el tema actual
     });
   };
 
@@ -59,7 +68,7 @@ function NotesEditor() {
                 onClick={() => setCurrentNoteId(note.id)}
                 className={`w-full text-left p-2 rounded-md transition-colors duration-200 ${
                   currentNoteId === note.id
-                   ? 'bg-blue-100 dark:bg-blue-700 text-blue-800 dark:text-blue-100 font-medium'
+                  ? 'bg-blue-100 dark:bg-blue-700 text-blue-800 dark:text-blue-100 font-medium'
                     : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                 }`}
               >
